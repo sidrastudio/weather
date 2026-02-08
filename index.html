@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Weather App</title>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#6a5cff;
+  font-family:Arial;
+}
+.box{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+  text-align:center;
+}
+input{
+  width:70%;
+  padding:6px;
+}
+button{
+  padding:6px 10px;
+}
+#out{
+  margin-top:15px;
+}
+.temp{
+  font-size:30px;
+  margin:8px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h3>Weather App</h3>
+  <input id="city" placeholder="Karachi">
+  <button onclick="getWeather()">Go</button>
+  <div id="out"></div>
+</div>
+
+<script>
+async function getWeather(){
+  const city = document.getElementById("city").value.trim();
+  const out = document.getElementById("out");
+
+  if(city === ""){
+    out.innerHTML = "❌ City ka naam likho";
+    return;
+  }
+
+  out.innerHTML = "Loading...";
+
+  try{
+    const res = await fetch(`https://wttr.in/${city}?format=j1`);
+    const data = await res.json();
+
+    const current = data.current_condition[0];
+
+    out.innerHTML = `
+      <h4>${city.toUpperCase()}</h4>
+      <div class="temp">${current.temp_C} °C</div>
+      <div>${current.weatherDesc[0].value}</div>
+      <div>💧 Humidity: ${current.humidity}%</div>
+      <div>🌬 Wind: ${current.windspeedKmph} km/h</div>
+    `;
+  }
+  catch{
+    out.innerHTML = "❌ Weather load nahi ho saka";
+  }
+}
+</script>
+
+</body>
+</html>
