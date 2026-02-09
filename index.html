@@ -191,7 +191,6 @@ button.search:hover{transform:scale(1.1)}
     <div id="out"></div>
   </div>
 </div>
-
 <script>
 function toggleDark(){
   document.body.classList.toggle("dark");
@@ -210,10 +209,10 @@ function createRain(){
 }
 
 async function getWeather(){
-  const city=cityInput.value.trim();
-  const out=document.getElementById("out");
-  const sun=document.getElementById("sun");
-  const rain=document.getElementById("rain");
+  const city = document.getElementById("city").value.trim(); // ✅ FIX
+  const out = document.getElementById("out");
+  const sun = document.getElementById("sun");
+  const rain = document.getElementById("rain");
 
   sun.style.display="none";
   rain.style.display="none";
@@ -226,31 +225,35 @@ async function getWeather(){
   out.innerHTML="⏳ Loading...";
 
   try{
-    const res=await fetch(`https://wttr.in/${city}?format=j1`);
-    const data=await res.json();
-    const w=data.current_condition[0];
-    const desc=w.weatherDesc[0].value.toLowerCase();
+    const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+    if(!res.ok) throw new Error();
 
-    if(desc.includes("sun")||desc.includes("clear")){
+    const data = await res.json();
+    const w = data.current_condition[0];
+    const desc = w.weatherDesc[0].value.toLowerCase();
+
+    if(desc.includes("sun") || desc.includes("clear")){
       sun.style.display="block";
     }
-    if(desc.includes("rain")||desc.includes("drizzle")){
+    if(desc.includes("rain") || desc.includes("drizzle")){
       rain.style.display="block";
       createRain();
     }
 
-    out.innerHTML=`
+    out.innerHTML = `
       <h4>${city.toUpperCase()}</h4>
       <div class="temp">${w.temp_C}°C</div>
       <div>${w.weatherDesc[0].value}</div>
       <div>💧 Humidity: ${w.humidity}%</div>
       <div>🌬 Wind: ${w.windspeedKmph} km/h</div>
     `;
-  }catch{
-    out.innerHTML="❌ City not found";
+  }
+  catch{
+    out.innerHTML="❌ City not found / Internet issue";
   }
 }
 </script>
+
 
 </body>
 </html>
